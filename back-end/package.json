@@ -8,7 +8,7 @@
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "Andrea Di Mauro",
+  "author": "Andrea Dimauro",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
