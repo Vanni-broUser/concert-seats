@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config.js';
+import sequelize from '../database.js';
 
 const Reservation = sequelize.define('Reservation', {
   theaterName: {

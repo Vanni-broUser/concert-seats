@@ -1,17 +1,32 @@
 import cors from 'cors';
 import express from 'express';
-import sequelize from './database/config.js';
-import Reservation from './database/models/Reservation.js';
+import passport from 'passport';
+import session from 'express-session';
+import sequelize from './database.js';
+import passportConfig from './config/passport';
+import Reservation from './models/Reservation.js';
 
 const PORT = 8000;
 const app = express();
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: 'GET,POST,PUT,DELETE',
   allowedHeaders: 'Content-Type,Authorization'
 }));
+app.use(
+  session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: false,
+    store: new SequelizeStore({
+      db: sequelize,
+    }),
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 sequelize.sync()
   .then(() => {
@@ -52,4 +67,18 @@ app.get('/reservation', async (req, res) => {
     console.error('Failed to retrieve reservations:', error);
     res.status(500).json({ error: 'An error occurred while retrieving the reservations' });
   }
+});
+
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/dashboard',
+  failureRedirect: '/login',
+}));
+
+app.post('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/');
+  });
 });
