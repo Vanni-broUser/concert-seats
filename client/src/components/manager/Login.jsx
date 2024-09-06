@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { login } from './auth';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -9,7 +8,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(username, password);
+      const response = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include'
+      });
+    
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
