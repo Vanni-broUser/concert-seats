@@ -1,0 +1,11 @@
+{
+  "name": "database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7",
+    "bcryptjs": "^2.4.3"
+  }
+}

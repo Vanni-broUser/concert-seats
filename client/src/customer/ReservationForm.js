@@ -8,7 +8,7 @@ function PrenotazionePostoTeatro() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8000/reservation', {
+      const response = await fetch('http://localhost:9000/reservation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

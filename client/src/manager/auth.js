@@ -1,5 +1,5 @@
 export const login = async (username, password) => {
-  const response = await fetch('/login', {
+  const response = await fetch('http://localhost:8000/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export const login = async (username, password) => {
 };
 
 export const logout = async () => {
-  const response = await fetch('/logout', {
+  const response = await fetch('http://localhost:8000/logout', {
     method: 'POST',
     credentials: 'include'
   });

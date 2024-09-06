@@ -1,11 +1,11 @@
 import React from 'react';
-import ReservationForm from './customer/ReservationForm';
+import Login from './manager/Login';
 
 function App() {
   return (
     <div className="App">
       <h1>Prenota il tuo posto al teatro</h1>
-      <ReservationForm />
+      <Login />
     </div>
   );
 }
