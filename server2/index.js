@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 
-import sequelize from '../database/database.js';
+import sequelize from '../database/config.js';
 import Reservation from '../database/models/Reservation.js';
 
 

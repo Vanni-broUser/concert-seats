@@ -5,7 +5,7 @@ import SequelizeStoreInit from 'connect-session-sequelize';
 
 import passport from './passport.js';
 import User from '../database/models/User.js';
-import sequelize from '../database/database.js';
+import sequelize from '../database/config.js';
 import Reservation from '../database/models/Reservation.js';
 
 
@@ -59,8 +59,8 @@ app.get('/reservation', async (req, res) => {
 });
 
 app.post('/login', passport.authenticate('local', {
-  successRedirect: '/dashboard',
-  failureRedirect: '/login'
+  successRedirect: 'http://localhost:3000/dashboard',
+  failureRedirect: 'http://localhost:3000/login'
 }));
 
 app.post('/logout', (req, res) => {
