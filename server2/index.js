@@ -3,6 +3,7 @@ import express from 'express';
 
 import sequelize from '../database/config.js';
 import Reservation from '../database/models/Reservation.js';
+import { initializeDatabase } from '../database/initialize.js';
 
 
 const PORT = 9000;
@@ -17,6 +18,7 @@ app.use(cors({
 
 sequelize.sync()
   .then(() => {
+    initializeDatabase();
     console.log('Database & tables created!');
   })
   .catch(err => console.error('Unable to create table:', err));

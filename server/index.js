@@ -7,6 +7,7 @@ import passport from './passport.js';
 import User from '../database/models/User.js';
 import sequelize from '../database/config.js';
 import Reservation from '../database/models/Reservation.js';
+import { initializeDatabase } from '../database/initialize.js';
 
 
 const PORT = 8000;
@@ -35,6 +36,7 @@ app.use(passport.session());
 
 sequelize.sync()
   .then(() => {
+    initializeDatabase();
     console.log('Database & tables created!');
   })
   .catch(err => console.error('Unable to create table:', err));
