@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config.js';
+import sequelize from '../database/config.js';
 import Theater from './Theater.js';
 import Show from './Show.js';
 

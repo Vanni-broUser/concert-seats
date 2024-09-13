@@ -4,10 +4,13 @@ import session from 'express-session';
 import SequelizeStoreInit from 'connect-session-sequelize';
 
 import passport from './passport.js';
-import User from '../database/models/User.js';
-import sequelize from '../database/config.js';
-import Reservation from '../database/models/Reservation.js';
-import { initializeDatabase } from '../database/initialize.js';
+import sequelize from './database/config.js';
+import { initializeDatabase } from './database/initialize.js';
+
+import Show from './models/Show.js';
+import User from './models/User.js';
+import Theater from './models/Theater.js';
+import Reservation from './models/Reservation.js';
 
 
 const PORT = 8000;
@@ -15,7 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:5173',
   methods: 'GET,POST,PUT,DELETE',
   allowedHeaders: 'Content-Type,Authorization',
   credentials: true
@@ -55,8 +58,37 @@ app.get('/reservation', async (req, res) => {
 
     res.status(200).json(reservations);
   } catch (error) {
-    console.error('Failed to retrieve reservations:', error);
+
     res.status(500).json({ error: 'An error occurred while retrieving the reservations' });
+  }
+});
+
+app.get('/theater', async (req, res) => {
+  try {
+    const theaters = await Theater.findAll();
+
+    res.status(200).json(theaters);
+  } catch (error) {
+
+    res.status(500).json({ error: 'An error occurred while retrieving the reservations' });
+  }
+});
+
+app.get('/theater/:theaterId/shows', async (req, res) => {
+  const { theaterId } = req.params;
+
+  try {
+    const shows = await Show.findAll({
+      where: { theaterId: theaterId }
+    });
+
+    if (shows.length === 0) {
+      return res.status(404).json({ message: 'No shows found for this theater' });
+    }
+
+    res.status(200).json(shows);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while retrieving the shows' });
   }
 });
 

@@ -1,14 +1,14 @@
-import Show from './models/Show.js';
-import Theater from './models/Theater.js';
+import Show from '../models/Show.js';
+import Theater from '../models/Theater.js';
 
 export async function initializeDatabase() {
   try {
     const theaterCount = await Theater.count();
     if (theaterCount === 0) {
       const theaters = await Theater.bulkCreate([
-        { name: 'Grand Theater', location: 'New York' },
-        { name: 'Majestic Cinema', location: 'Los Angeles' },
-        { name: 'Opera House', location: 'San Francisco' }
+        { name: 'Grand Theater', location: 'New York', numColumn: 8, numRow: 4 },
+        { name: 'Majestic Cinema', location: 'Los Angeles', numColumn: 10, numRow: 6 },
+        { name: 'Opera House', location: 'San Francisco', numColumn: 14, numRow: 9 }
       ]);
 
       await Show.bulkCreate([

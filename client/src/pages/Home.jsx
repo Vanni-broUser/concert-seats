@@ -1,78 +1,97 @@
-import { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
 
-function PrenotazionePostoTeatro() {
-  const [theaterName, setTheaterName] = useState('');
-  const [seatNumber, setSeatNumber] = useState('');
+const TheaterShows = () => {
+  const [theaters, setTheaters] = useState([]);
+  const [selectedTheater, setSelectedTheater] = useState('');
+  const [shows, setShows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch('http://localhost:9000/reservation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          theaterName: theaterName,
-          seatNumber: seatNumber
-        })
-      });
-
-      if (response.ok) {
-        alert('Prenotazione effettuata con successo!');
-        setSeatNumber('');
-        setTheaterName('');
-      } else {
-        alert('Errore nella prenotazione.');
+  // Effetto per recuperare i teatri
+  useEffect(() => {
+    const fetchTheaters = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/theater');
+        if (!response.ok) throw new Error('Errore nel recupero dei teatri');
+        const data = await response.json();
+        setTheaters(data);
+      } catch (error) {
+        setError(error.message);
       }
-    } catch (error) {
-      console.error('Errore nella richiesta:', error);
-      alert('Si è verificato un errore durante la prenotazione.');
-    }
+    };
+
+    fetchTheaters();
+  }, []);
+
+  // Effetto per recuperare gli spettacoli del teatro selezionato
+  useEffect(() => {
+    const fetchShows = async () => {
+      if (!selectedTheater) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`http://localhost:8000/theater/${selectedTheater}/shows`);
+        if (!response.ok) throw new Error('Errore nel recupero degli spettacoli');
+        const data = await response.json();
+        setShows(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchShows();
+  }, [selectedTheater]);
+
+  const handleTheaterChange = (e) => {
+    setSelectedTheater(e.target.value);
+    setShows([]); // Resetta gli spettacoli quando si cambia teatro
   };
 
   return (
     <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow-lg">
-            <div className="card-header bg-primary text-white text-center">
-              <h4 className="mb-0">Prenotazione Posto Teatro</h4>
-            </div>
-            <div className="card-body">
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="seatNumber">Numero del posto:</label>
-                  <input
-                    type="number"
-                    id="seatNumber"
-                    className="form-control"
-                    value={seatNumber}
-                    onChange={(e) => setSeatNumber(e.target.value)}
-                    required
-                  />
+      <h1 className="mb-4">Seleziona un teatro</h1>
+
+      {/* Visualizzazione errori */}
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      {/* Select per scegliere un teatro */}
+      <div className="mb-4">
+        <select className="form-select" value={selectedTheater} onChange={handleTheaterChange}>
+          <option value="">-- Seleziona un teatro --</option>
+          {theaters.map((theater) => (
+            <option key={theater.id} value={theater.id}>
+              {theater.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Messaggio di caricamento */}
+      {loading && <div className="text-center">Caricamento spettacoli...</div>}
+
+      {/* Card con spettacoli */}
+      <div className="row">
+        {shows.length > 0 ? (
+          shows.map((show) => (
+            <div key={show.id} className="col-md-4 mb-4">
+              <div className="card h-100">
+                <div className="card-body">
+                  <h5 className="card-title">{show.title}</h5>
+                  <p className="card-text">{show.description}</p>
+                  <p className="card-text"><strong>Data:</strong> {show.date}</p>
+                  <p className="card-text"><strong>Orario:</strong> {show.time}</p>
                 </div>
-                <div className="form-group">
-                  <label htmlFor="theaterName">Nome del teatro:</label>
-                  <input
-                    type="text"
-                    id="theaterName"
-                    className="form-control"
-                    value={theaterName}
-                    onChange={(e) => setTheaterName(e.target.value)}
-                    required
-                  />
-                </div>
-                <button type="submit" className="btn btn-primary btn-block">Prenota</button>
-              </form>
+              </div>
             </div>
-          </div>
-        </div>
+          ))
+        ) : (
+          !loading && selectedTheater && <div className="col-12 text-center">Nessuno spettacolo disponibile per questo teatro</div>
+        )}
       </div>
     </div>
   );
-}
+};
 
-export default PrenotazionePostoTeatro;
+export default TheaterShows;

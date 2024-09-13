@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config.js';
+import sequelize from '../database/config.js';
 
 const Theater = sequelize.define('Theater', {
   name: {
@@ -8,6 +8,14 @@ const Theater = sequelize.define('Theater', {
   },
   location: {
     type: DataTypes.STRING,
+    allowNull: false
+  },
+  numColumn: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  numRow: {
+    type: DataTypes.INTEGER,
     allowNull: false
   }
 });
