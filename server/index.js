@@ -74,6 +74,29 @@ app.get('/theater', async (req, res) => {
   }
 });
 
+app.get('/shows/:showId', async (req, res) => {
+  const { showId } = req.params;
+
+  try {
+    const show = await Show.findOne({
+      where: { id: showId },
+      include: {
+        model: Theater,
+        attributes: ['name', 'location', 'numColumn', 'numRow']
+      }
+    });
+
+    if (!show) {
+      return res.status(404).json({ error: 'Show non trovato' });
+    }
+
+    return res.json(show);
+  } catch (error) {
+    console.error('Errore nel recupero dello show:', error);
+    return res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
 app.get('/theater/:theaterId/shows', async (req, res) => {
   const { theaterId } = req.params;
 

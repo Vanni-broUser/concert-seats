@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const TheaterShows = () => {
   const [theaters, setTheaters] = useState([]);
@@ -6,8 +7,8 @@ const TheaterShows = () => {
   const [shows, setShows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // Effetto per recuperare i teatri
   useEffect(() => {
     const fetchTheaters = async () => {
       try {
@@ -23,7 +24,6 @@ const TheaterShows = () => {
     fetchTheaters();
   }, []);
 
-  // Effetto per recuperare gli spettacoli del teatro selezionato
   useEffect(() => {
     const fetchShows = async () => {
       if (!selectedTheater) return;
@@ -46,17 +46,19 @@ const TheaterShows = () => {
 
   const handleTheaterChange = (e) => {
     setSelectedTheater(e.target.value);
-    setShows([]); // Resetta gli spettacoli quando si cambia teatro
+    setShows([]);
+  };
+
+  const handleCardClick = (showId) => {
+    navigate(`/reservation/${showId}`);
   };
 
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Seleziona un teatro</h1>
 
-      {/* Visualizzazione errori */}
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Select per scegliere un teatro */}
       <div className="mb-4">
         <select className="form-select" value={selectedTheater} onChange={handleTheaterChange}>
           <option value="">-- Seleziona un teatro --</option>
@@ -68,15 +70,17 @@ const TheaterShows = () => {
         </select>
       </div>
 
-      {/* Messaggio di caricamento */}
       {loading && <div className="text-center">Caricamento spettacoli...</div>}
 
-      {/* Card con spettacoli */}
       <div className="row">
         {shows.length > 0 ? (
           shows.map((show) => (
             <div key={show.id} className="col-md-4 mb-4">
-              <div className="card h-100">
+              <div
+                className="card h-100"
+                onClick={() => handleCardClick(show.id)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="card-body">
                   <h5 className="card-title">{show.title}</h5>
                   <p className="card-text">{show.description}</p>
