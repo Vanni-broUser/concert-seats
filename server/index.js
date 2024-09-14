@@ -53,13 +53,50 @@ app.get('/', (req, res) => {
 });
 
 app.get('/reservation', async (req, res) => {
+  const { showId } = req.query;
+
   try {
-    const reservations = await Reservation.findAll();
+    if (!showId) {
+      return res.status(400).json({ error: 'showId is required' });
+    }
+
+    const reservations = await Reservation.findAll({
+      where: {
+        ShowId: showId
+      },
+      include: [{
+        model: Show,
+        attributes: ['title', 'time']
+      }]
+    });
 
     res.status(200).json(reservations);
   } catch (error) {
-
     res.status(500).json({ error: 'An error occurred while retrieving the reservations' });
+  }
+});
+
+app.post('/reservation', async (req, res) => {
+  const { showId, seats } = req.body;
+
+  try {
+    const show = await Show.findByPk(showId);
+    if (!show) return res.status(404).json({ error: 'Spettacolo non trovato' });
+
+    const user = await User.findOne();
+    if (!user) return res.status(401).json({ error: 'Utente non autenticato' });
+
+    const reservations = seats.map(seat => ({
+      seat,
+      ShowId: showId,
+      UserId: user.id
+    }));
+
+    await Reservation.bulkCreate(reservations);
+
+    res.status(200).json({ message: 'Prenotazione effettuata con successo' });
+  } catch (error) {
+    res.status(500).json({ error: 'Errore durante la prenotazione' });
   }
 });
 

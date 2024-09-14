@@ -1,27 +1,23 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/config.js';
-import Theater from './Theater.js';
+import User from './User.js';
 import Show from './Show.js';
 
 const Reservation = sequelize.define('Reservation', {
-  theaterName: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  seatNumber: {
+  seat: {
     type: DataTypes.STRING,
     allowNull: false
   }
 });
 
-Reservation.belongsTo(Theater, {
+Reservation.belongsTo(Show, {
   foreignKey: {
     allowNull: false
   },
   onDelete: 'CASCADE'
 });
 
-Reservation.belongsTo(Show, {
+Reservation.belongsTo(User, {
   foreignKey: {
     allowNull: false
   },
