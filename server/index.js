@@ -8,6 +8,7 @@ import sequelize from './database/config.js';
 import { initializeDatabase } from './database/initialize.js';
 
 import Show from './models/Show.js';
+import Seat from './models/Seat.js';
 import User from './models/User.js';
 import Theater from './models/Theater.js';
 import Reservation from './models/Reservation.js';
@@ -65,6 +66,9 @@ app.get('/reservation', async (req, res) => {
         ShowId: showId
       },
       include: [{
+        model: Seat,
+        attributes: ['seatNumber']
+      }, {
         model: Show,
         attributes: ['title', 'time']
       }]
@@ -97,18 +101,22 @@ app.post('/reservation', async (req, res) => {
       return res.status(400).json({ error: 'User already has a reservation for this show' });
     }
 
-    const reservations = seats.map(seat => ({
-      seat,
+    const reservation = await Reservation.create({
       ShowId: showId,
       UserId: user.id
+    });
+
+    const seatEntries = seats.map(seatNumber => ({
+      seatNumber,
+      ReservationId: reservation.id
     }));
 
-    await Reservation.bulkCreate(reservations);
+    await Seat.bulkCreate(seatEntries);
 
     res.status(200).json({ message: 'Reservation made successfully!' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred during the reservations' });
+    res.status(500).json({ error: 'An error occurred during the reservation process' });
   }
 });
 

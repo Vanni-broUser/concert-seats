@@ -2,6 +2,7 @@ import Show from '../models/Show.js';
 import Theater from '../models/Theater.js';
 import User from '../models/User.js';
 import Reservation from '../models/Reservation.js';
+import Seat from '../models/Seat.js';
 
 export async function initializeDatabase() {
   try {
@@ -29,18 +30,23 @@ export async function initializeDatabase() {
         { username: 'bob_builder', password: 'password000' }
       ]);
 
-      await Reservation.bulkCreate([
-        { seat: '1-A', ShowId: shows[0].id, UserId: users[0].id },
-        { seat: '1-B', ShowId: shows[0].id, UserId: users[0].id },
-        { seat: '2-C', ShowId: shows[2].id, UserId: users[1].id },
-        { seat: '2-D', ShowId: shows[2].id, UserId: users[1].id }
+      const reservations = await Reservation.bulkCreate([
+        { ShowId: shows[0].id, UserId: users[0].id },
+        { ShowId: shows[2].id, UserId: users[1].id }
       ]);
 
-      console.log('Theaters, shows, users and reservations successfully created!');
+      await Seat.bulkCreate([
+        { seatNumber: '1-A', ReservationId: reservations[0].id },
+        { seatNumber: '1-B', ReservationId: reservations[0].id },
+        { seatNumber: '2-C', ReservationId: reservations[1].id },
+        { seatNumber: '2-D', ReservationId: reservations[1].id }
+      ]);
+
+      console.log('Theaters, shows, users, reservations, and seats successfully created!');
     } else {
-      console.log('The data already exists. No need to create theatres, shows, users or reservations.');
+      console.log('The data already exists. No need to create theaters, shows, users, or reservations.');
     }
   } catch (error) {
-    console.error('An error occured during the database inizialization:', error);
+    console.error('An error occurred during the database initialization:', error);
   }
 }
