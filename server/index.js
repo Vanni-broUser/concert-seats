@@ -45,7 +45,7 @@ sequelize.sync()
   .catch(err => console.error('Unable to create table:', err));
 
 app.listen(PORT, () => {
-  console.log(`Server in esecuzione sulla porta ${PORT}`);
+  console.log(`Server running on the port ${PORT}`);
 });
 
 app.get('/', (req, res) => {
@@ -81,10 +81,10 @@ app.post('/reservation', async (req, res) => {
 
   try {
     const show = await Show.findByPk(showId);
-    if (!show) return res.status(404).json({ error: 'Spettacolo non trovato' });
+    if (!show) return res.status(404).json({ error: 'Show not found' });
 
     const user = await User.findOne();
-    if (!user) return res.status(401).json({ error: 'Utente non autenticato' });
+    if (!user) return res.status(401).json({ error: 'Unauthenticated user' });
 
     const reservations = seats.map(seat => ({
       seat,
@@ -94,9 +94,9 @@ app.post('/reservation', async (req, res) => {
 
     await Reservation.bulkCreate(reservations);
 
-    res.status(200).json({ message: 'Prenotazione effettuata con successo' });
+    res.status(200).json({ message: 'Reservation made successfully!' });
   } catch (error) {
-    res.status(500).json({ error: 'Errore durante la prenotazione' });
+    res.status(500).json({ error: 'An error occurred during the reservations' });
   }
 });
 
@@ -124,13 +124,13 @@ app.get('/shows/:showId', async (req, res) => {
     });
 
     if (!show) {
-      return res.status(404).json({ error: 'Show non trovato' });
+      return res.status(404).json({ error: 'Show not found' });
     }
 
     return res.json(show);
   } catch (error) {
-    console.error('Errore nel recupero dello show:', error);
-    return res.status(500).json({ error: 'Errore del server' });
+    console.error('An error occurred while retrieving the shows', error);
+    return res.status(500).json({ error: 'Server Error' });
   }
 });
 

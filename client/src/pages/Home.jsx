@@ -13,7 +13,7 @@ const TheaterShows = () => {
     const fetchTheaters = async () => {
       try {
         const response = await fetch('http://localhost:8000/theater');
-        if (!response.ok) throw new Error('Errore nel recupero dei teatri');
+        if (!response.ok) throw new Error('An error occurred while retrieving the theaters');
         const data = await response.json();
         setTheaters(data);
       } catch (error) {
@@ -31,7 +31,7 @@ const TheaterShows = () => {
       setError(null);
       try {
         const response = await fetch(`http://localhost:8000/theater/${selectedTheater}/shows`);
-        if (!response.ok) throw new Error('Errore nel recupero degli spettacoli');
+        if (!response.ok) throw new Error('An error occurred while retrieving the shows');
         const data = await response.json();
         setShows(data);
       } catch (error) {
@@ -55,13 +55,13 @@ const TheaterShows = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="mb-4">Seleziona un teatro</h1>
+      <h1 className="mb-4">Choose a theater</h1>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="mb-4">
         <select className="form-select" value={selectedTheater} onChange={handleTheaterChange}>
-          <option value="">-- Seleziona un teatro --</option>
+          <option value="">-- Choose a theater --</option>
           {theaters.map((theater) => (
             <option key={theater.id} value={theater.id}>
               {theater.name}
@@ -91,7 +91,7 @@ const TheaterShows = () => {
             </div>
           ))
         ) : (
-          !loading && selectedTheater && <div className="col-12 text-center">Nessuno spettacolo disponibile per questo teatro</div>
+          !loading && selectedTheater && <div className="col-12 text-center">No show available for this theater</div>
         )}
       </div>
     </div>

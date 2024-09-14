@@ -17,17 +17,17 @@ const Reservation = () => {
       setLoading(true);
       try {
         const response = await fetch(`http://localhost:8000/shows/${showId}`);
-        if (!response.ok) throw new Error('Errore nel recupero delle informazioni del teatro');
+        if (!response.ok) throw new Error('An error occurred while retrieving the theater information');
         
         const data = await response.json();
         if (data && data.Theater) {
           setTheater(data.Theater);
         } else {
-          setError('Nessun dato disponibile per questo spettacolo');
+          setError('No information available for this show');
         }
 
         const reservationResponse = await fetch(`http://localhost:8000/reservation?showId=${showId}`);
-        if (!reservationResponse.ok) throw new Error('Errore nel recupero delle prenotazioni');
+        if (!reservationResponse.ok) throw new Error('An error occurred while retrieving the reservations');
         
         const reservations = await reservationResponse.json();
         setOccupiedSeats(reservations.map(res => res.seat));
@@ -68,7 +68,7 @@ const Reservation = () => {
     const match = inputSeat.match(seatRegex);
 
     if (!match) {
-      setInputError('Formato non valido. Usa il formato "Riga-Colonna" (es. 1-A).');
+      setInputError('Invalid format. Use "Row-Column" format (es. 1-A).');
       return;
     }
 
@@ -76,7 +76,7 @@ const Reservation = () => {
     const column = columnLetter.charCodeAt(0) - 64;
     
     if (row <= 0 || column <= 0 || row > theater.numRow || column > theater.numColumn) {
-      setInputError('Posto non valido. Controlla i numeri di riga e colonna.');
+      setInputError('Invalid seat. Check the row and column numbers.');
       return;
     }
 
@@ -105,9 +105,9 @@ const Reservation = () => {
         })
       });
 
-      if (!response.ok) throw new Error('Errore nella prenotazione dei posti');
+      if (!response.ok) throw new Error('An error ouccrred while booking the seats');
       
-      alert('Prenotazione effettuata con successo!');
+      alert('Reservation made successfully!');
       setSelectedSeats([]);
     } catch (error) {
       setError(error.message);
@@ -152,18 +152,18 @@ const Reservation = () => {
 
   return (
     <div className="container mt-5">
-      <h1>Seleziona i posti</h1>
+      <h1>Select the seats</h1>
       {theater ? (
         <>
           <div className="seat-grid mt-4">
             {renderSeats()}
           </div>
           <div className="mt-4">
-            <h5>Posti selezionati:</h5>
+            <h5>Selected seats:</h5>
             {selectedSeats.length > 0 ? (
               <p>{selectedSeats.join(', ')}</p>
             ) : (
-              <p>Nessun posto selezionato</p>
+              <p>No seat selected</p>
             )}
           </div>
           <div className="mt-4">
@@ -171,19 +171,19 @@ const Reservation = () => {
               type="text"
               value={inputSeat}
               onChange={handleInputChange}
-              placeholder="Inserisci il posto (es. 1-A)"
+              placeholder="Enter the number of seats (es. 1-A)"
             />
-            <button onClick={handleInputSubmit}>Seleziona</button>
+            <button onClick={handleInputSubmit}>Select</button>
             {inputError && <div className="alert alert-danger mt-2">{inputError}</div>}
           </div>
           <div className="mt-4">
             <button onClick={handleReservation} disabled={selectedSeats.length === 0}>
-              Conferma Prenotazione
+              Submit Confirmation
             </button>
           </div>
         </>
       ) : (
-        <div className="text-center">Nessun dato disponibile per questo spettacolo.</div>
+        <div className="text-center">No data available for this show</div>
       )}
     </div>
   );

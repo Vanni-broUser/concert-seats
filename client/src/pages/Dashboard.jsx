@@ -20,15 +20,15 @@ function PrenotazionePostoTeatro() {
       });
 
       if (response.ok) {
-        alert('Prenotazione effettuata con successo!');
+        alert('Reservation made successfully!');
         setSeatNumber('');
         setTheaterName('');
       } else {
-        alert('Errore nella prenotazione.');
+        alert('An error occurred during the reservation.');
       }
     } catch (error) {
-      console.error('Errore nella richiesta:', error);
-      alert('Si è verificato un errore durante la prenotazione.');
+      console.error('An error occurred during the request', error);
+      alert('An error occurred during the reservation.');
     }
   };
 
@@ -36,7 +36,7 @@ function PrenotazionePostoTeatro() {
     <form onSubmit={handleSubmit}>
       <div>
         <label>
-          Numero del posto:
+          Seat number:
           <input
             type="number"
             value={seatNumber}
@@ -47,7 +47,7 @@ function PrenotazionePostoTeatro() {
       </div>
       <div>
         <label>
-          Nome del teatro:
+          Theater Name:
           <input
             type="text"
             value={theaterName}
@@ -56,7 +56,7 @@ function PrenotazionePostoTeatro() {
           />
         </label>
       </div>
-      <button type="submit">Prenota</button>
+      <button type="submit">Reserve</button>
     </form>
   );
 }

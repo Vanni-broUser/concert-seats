@@ -36,11 +36,11 @@ export async function initializeDatabase() {
         { seat: '2-D', ShowId: shows[2].id, UserId: users[1].id }
       ]);
 
-      console.log('Teatri, spettacoli, utenti e prenotazioni creati con successo!');
+      console.log('Theaters, shows, users and reservations successfully created!');
     } else {
-      console.log('I dati esistono già. Nessuna necessità di creare teatri, spettacoli, utenti o prenotazioni.');
+      console.log('The data already exists. No need to create theatres, shows, users or reservations.');
     }
   } catch (error) {
-    console.error('Errore durante l\'inizializzazione del database:', error);
+    console.error('An error occured during the database inizialization:', error);
   }
 }
