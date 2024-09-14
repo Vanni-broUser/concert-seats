@@ -70,7 +70,7 @@ const TheaterShows = () => {
         </select>
       </div>
 
-      {loading && <div className="text-center">Caricamento spettacoli...</div>}
+      {loading && <div className="text-center">Lowding shows...</div>}
 
       <div className="row">
         {shows.length > 0 ? (
@@ -85,7 +85,7 @@ const TheaterShows = () => {
                   <h5 className="card-title">{show.title}</h5>
                   <p className="card-text">{show.description}</p>
                   <p className="card-text"><strong>Data:</strong> {show.date}</p>
-                  <p className="card-text"><strong>Orario:</strong> {show.time}</p>
+                  <p className="card-text"><strong>Time:</strong> {show.time}</p>
                 </div>
               </div>
             </div>
