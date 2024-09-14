@@ -7,9 +7,10 @@ const Reservation = () => {
   const [theater, setTheater] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [occupiedSeats, setOccupiedSeats] = useState([]);
+  const [show, setShow] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [inputSeat, setInputSeat] = useState('');
+  const [numberOfSeats, setNumberOfSeats] = useState('');
   const [inputError, setInputError] = useState('');
 
   useEffect(() => {
@@ -17,17 +18,18 @@ const Reservation = () => {
       setLoading(true);
       try {
         const response = await fetch(`http://localhost:8000/shows/${showId}`);
-        if (!response.ok) throw new Error('An error occurred while retrieving the theater information');
+        if (!response.ok) throw new Error('Error fetching show information');
         
         const data = await response.json();
         if (data && data.Theater) {
           setTheater(data.Theater);
+          setShow(data.Show);
         } else {
-          setError('No information available for this show');
+          setError('No data available for this show');
         }
 
         const reservationResponse = await fetch(`http://localhost:8000/reservation?showId=${showId}`);
-        if (!reservationResponse.ok) throw new Error('An error occurred while retrieving the reservations');
+        if (!reservationResponse.ok) throw new Error('Error fetching reservations');
         
         const reservations = await reservationResponse.json();
         setOccupiedSeats(reservations.map(res => res.seat));
@@ -56,43 +58,63 @@ const Reservation = () => {
     );
   };
 
-  const handleInputChange = (event) => {
-    setInputSeat(event.target.value.toUpperCase());
+  const handleNumberOfSeatsChange = (event) => {
+    setNumberOfSeats(event.target.value);
     setInputError('');
   };
 
-  const handleInputSubmit = () => {
-    if (!theater || !inputSeat) return;
+  const handleNumberOfSeatsSubmit = async () => {
+    if (!theater || !numberOfSeats) return;
 
-    const seatRegex = /^(\d+)-([A-Z])$/;
-    const match = inputSeat.match(seatRegex);
-
-    if (!match) {
-      setInputError('Invalid format. Use "Row-Column" format (es. 1-A).');
+    const numSeats = parseInt(numberOfSeats, 10);
+    if (isNaN(numSeats) || numSeats <= 0) {
+      setInputError('Please enter a valid number of seats.');
       return;
     }
 
-    const [, row, columnLetter] = match;
-    const column = columnLetter.charCodeAt(0) - 64;
-    
-    if (row <= 0 || column <= 0 || row > theater.numRow || column > theater.numColumn) {
-      setInputError('Invalid seat. Check the row and column numbers.');
+    const availableSeats = [];
+    for (let row = 1; row <= theater.numRow; row++) {
+      for (let column = 1; column <= theater.numColumn; column++) {
+        const seatId = `${row}-${getColumnLetter(column)}`;
+        if (!occupiedSeats.includes(seatId) && availableSeats.length < numSeats) {
+          availableSeats.push(seatId);
+        }
+      }
+    }
+
+    if (availableSeats.length < numSeats) {
+      setInputError('Not enough seats available.');
       return;
     }
 
-    const seat = `${row}-${columnLetter}`;
-    if (!occupiedSeats.includes(seat)) {
-      setSelectedSeats((prevSelected) =>
-        prevSelected.includes(seat)
-          ? prevSelected.filter((s) => s !== seat)
-          : [...prevSelected, seat]
-      );
-    }
+    try {
+      const response = await fetch(`http://localhost:8000/reservation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          showId,
+          seats: availableSeats
+        })
+      });
 
-    setInputSeat('');
+      if (!response.ok) throw new Error('Error making reservation');
+      
+      alert('Reservation successful!');
+      setNumberOfSeats('');
+      window.location.reload();
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
-  const handleReservation = async () => {
+  const handleConfirmReservation = async () => {
+    if (selectedSeats.length === 0) {
+      setInputError('Please select seats before confirming.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:8000/reservation`, {
         method: 'POST',
@@ -105,10 +127,12 @@ const Reservation = () => {
         })
       });
 
-      if (!response.ok) throw new Error('An error ouccrred while booking the seats');
+      if (!response.ok) throw new Error('Error making reservation');
       
-      alert('Reservation made successfully!');
+      alert('Reservation successful!');
       setSelectedSeats([]);
+      setNumberOfSeats('');
+      window.location.reload();
     } catch (error) {
       setError(error.message);
     }
@@ -142,8 +166,13 @@ const Reservation = () => {
     return rows;
   };
 
+  const totalSeats = theater ? theater.numRow * theater.numColumn : 0;
+  const occupiedSeatsCount = occupiedSeats.length;
+  const selectedSeatsCount = selectedSeats.length;
+  const availableSeatsCount = totalSeats - occupiedSeatsCount;
+
   if (loading) {
-    return <div className="text-center">Caricamento...</div>;
+    return <div className="text-center">Loading...</div>;
   }
 
   if (error) {
@@ -152,38 +181,43 @@ const Reservation = () => {
 
   return (
     <div className="container mt-5">
-      <h1>Select the seats</h1>
+      <h1>{show ? show.title : 'Show Details'}</h1>
+      <div className="mt-3 mb-4">
+        <p><strong>Available Seats:</strong> {availableSeatsCount} | &nbsp;
+        <strong>Occupied Seats:</strong> {occupiedSeatsCount} | &nbsp;
+        <strong>Selected Seats:</strong> {selectedSeatsCount} | &nbsp;
+        <strong>Total Seats:</strong> {totalSeats}</p>
+      </div>
       {theater ? (
         <>
           <div className="seat-grid mt-4">
             {renderSeats()}
           </div>
           <div className="mt-4">
-            <h5>Selected seats:</h5>
-            {selectedSeats.length > 0 ? (
-              <p>{selectedSeats.join(', ')}</p>
-            ) : (
-              <p>No seat selected</p>
-            )}
-          </div>
-          <div className="mt-4">
-            <input
-              type="text"
-              value={inputSeat}
-              onChange={handleInputChange}
-              placeholder="Enter the number of seats (es. 1-A)"
-            />
-            <button onClick={handleInputSubmit}>Select</button>
-            {inputError && <div className="alert alert-danger mt-2">{inputError}</div>}
-          </div>
-          <div className="mt-4">
-            <button onClick={handleReservation} disabled={selectedSeats.length === 0}>
-              Submit Confirmation
+            <button className="btn btn-success" onClick={handleConfirmReservation}>
+              Confirm Reservation
             </button>
+            <div className="mb-3">
+              <label className="form-check-label me-2">Number of seats to book:</label>
+              <input
+                type="number"
+                value={numberOfSeats}
+                onChange={handleNumberOfSeatsChange}
+                placeholder="Number of seats"
+                min="1"
+              />
+              <button
+                className="btn btn-primary ms-2"
+                onClick={handleNumberOfSeatsSubmit}
+              >
+                Auto Book
+              </button>
+            </div>
+            {inputError && <div className="alert alert-danger mt-2">{inputError}</div>}
           </div>
         </>
       ) : (
-        <div className="text-center">No data available for this show</div>
+        <div className="text-center">No data available for this show.</div>
       )}
     </div>
   );
