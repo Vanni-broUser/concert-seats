@@ -7,6 +7,7 @@ import '../styles/Reservation.css';
 const Reservation = () => {
   const { showId } = useParams();
   const userId = 4;
+  const [reservationId, setReservationId] = useState(null);
   const [theater, setTheater] = useState(null);
   const [show, setShow] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -39,6 +40,7 @@ const Reservation = () => {
         setOccupiedSeats(reservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
 
         const userReservations = reservations.filter(res => res.UserId === userId);
+        setReservationId(userReservations[0] ? userReservations[0].id : null);
         setUserReservedSeats(userReservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
       } catch (error) {
         setError(error.message);
@@ -145,7 +147,7 @@ const Reservation = () => {
 
   const handleDeleteReservation = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/reservation/${userId}`, {
+      const response = await fetch(`http://localhost:8000/reservation/${reservationId}`, {
         method: 'DELETE'
       });
 
