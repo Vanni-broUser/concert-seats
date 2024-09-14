@@ -6,7 +6,7 @@ import '../styles/Reservation.css';
 
 const Reservation = () => {
   const { showId } = useParams();
-  const userId = 1;
+  const userId = 4;
   const [theater, setTheater] = useState(null);
   const [show, setShow] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -36,10 +36,10 @@ const Reservation = () => {
         if (!reservationResponse.ok) throw new Error('Error fetching reservations');
 
         const reservations = await reservationResponse.json();
-        setOccupiedSeats(reservations.map(res => res.seat));
+        setOccupiedSeats(reservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
 
         const userReservations = reservations.filter(res => res.UserId === userId);
-        setUserReservedSeats(userReservations.map(res => res.seat));
+        setUserReservedSeats(userReservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
       } catch (error) {
         setError(error.message);
       } finally {
@@ -143,6 +143,22 @@ const Reservation = () => {
     }
   };
 
+  const handleDeleteReservation = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/reservation/${userId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) throw new Error('Error deleting reservation');
+
+      alert('Reservation cancelled!');
+      setUserReservedSeats([]);
+      window.location.reload();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   const totalSeats = theater ? theater.numRow * theater.numColumn : 0;
   const occupiedSeatsCount = occupiedSeats.length;
   const selectedSeatsCount = selectedSeats.length;
@@ -160,6 +176,7 @@ const Reservation = () => {
         selectedSeatsCount={selectedSeatsCount}
         totalSeats={totalSeats}
         userReservedSeats={userReservedSeats}
+        onDeleteReservation={handleDeleteReservation}
       />
       {theater && (
         <>

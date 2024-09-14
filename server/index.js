@@ -80,6 +80,24 @@ app.get('/reservation', async (req, res) => {
   }
 });
 
+app.delete('/reservation/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const reservation = await Reservation.findByPk(id);
+    if (!reservation) {
+      return res.status(404).json({ error: 'Reservation not found' });
+    }
+
+    await reservation.destroy();
+
+    res.status(200).json({ message: 'Reservation and associated seats successfully deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while deleting the reservation' });
+  }
+});
+
 app.post('/reservation', async (req, res) => {
   const { showId, seats, userId } = req.body;
 

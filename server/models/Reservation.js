@@ -19,17 +19,18 @@ Reservation.belongsTo(User, {
   onDelete: 'CASCADE'
 });
 
-Seat.belongsTo(Reservation, {
+Reservation.hasMany(Seat, {
   foreignKey: {
     allowNull: false
   },
   onDelete: 'CASCADE'
 });
 
-Reservation.hasMany(Seat, {
+Seat.belongsTo(Reservation, {
   foreignKey: {
     allowNull: false
-  }
-})
+  },
+  onDelete: 'CASCADE'
+});
 
 export default Reservation;
