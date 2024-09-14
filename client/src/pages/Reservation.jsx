@@ -4,9 +4,11 @@ import '../styles/Reservation.css';
 
 const Reservation = () => {
   const { showId } = useParams();
+  const userId = 1; // Definiamo la costante userId = 1 per l'utente corrente
   const [theater, setTheater] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [occupiedSeats, setOccupiedSeats] = useState([]);
+  const [userReservedSeats, setUserReservedSeats] = useState([]); // Stato per i posti riservati dall'utente
   const [show, setShow] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,6 +19,7 @@ const Reservation = () => {
     const fetchTheaterInfo = async () => {
       setLoading(true);
       try {
+        // Recupera le informazioni dello spettacolo e del teatro
         const response = await fetch(`http://localhost:8000/shows/${showId}`);
         if (!response.ok) throw new Error('Error fetching show information');
         
@@ -28,11 +31,16 @@ const Reservation = () => {
           setError('No data available for this show');
         }
 
+        // Recupera i posti occupati
         const reservationResponse = await fetch(`http://localhost:8000/reservation?showId=${showId}`);
         if (!reservationResponse.ok) throw new Error('Error fetching reservations');
         
         const reservations = await reservationResponse.json();
         setOccupiedSeats(reservations.map(res => res.seat));
+
+        // Recupera le prenotazioni dell'utente 1
+        const userReservations = reservations.filter(res => res.UserId === userId);
+        setUserReservedSeats(userReservations.map(res => res.seat)); // Salva i posti riservati dall'utente
       } catch (error) {
         setError(error.message);
       } finally {
@@ -41,7 +49,7 @@ const Reservation = () => {
     };
 
     fetchTheaterInfo();
-  }, [showId]);
+  }, [showId, userId]);
 
   const getColumnLetter = (columnNumber) => {
     return String.fromCharCode(64 + columnNumber);
@@ -95,7 +103,8 @@ const Reservation = () => {
         },
         body: JSON.stringify({
           showId,
-          seats: availableSeats
+          seats: availableSeats,
+          userId // Usiamo l'userId costante qui
         })
       });
 
@@ -123,7 +132,8 @@ const Reservation = () => {
         },
         body: JSON.stringify({
           showId,
-          seats: selectedSeats
+          seats: selectedSeats,
+          userId // Usiamo l'userId costante qui
         })
       });
 
@@ -146,7 +156,14 @@ const Reservation = () => {
         const seatId = `${row}-${getColumnLetter(column)}`;
         const isSelected = selectedSeats.includes(seatId);
         const isOccupied = occupiedSeats.includes(seatId);
-        const seatClass = isOccupied ? 'occupied' : isSelected ? 'selected' : 'available';
+        const isUserReserved = userReservedSeats.includes(seatId); // Controlla se il posto è riservato dall'utente
+        const seatClass = isUserReserved
+          ? 'occupied'
+          : isOccupied
+          ? 'occupied'
+          : isSelected
+          ? 'selected'
+          : 'available';
         seatsInRow.push(
           <div
             key={seatId}
@@ -187,6 +204,7 @@ const Reservation = () => {
         <strong>Occupied Seats:</strong> {occupiedSeatsCount} | &nbsp;
         <strong>Selected Seats:</strong> {selectedSeatsCount} | &nbsp;
         <strong>Total Seats:</strong> {totalSeats}</p>
+        <p><strong>Your Reserved Seats:</strong> {userReservedSeats.join(', ') || 'None'}</p> {/* Mostra i posti riservati dall'utente */}
       </div>
       {theater ? (
         <>

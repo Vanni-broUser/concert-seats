@@ -77,14 +77,25 @@ app.get('/reservation', async (req, res) => {
 });
 
 app.post('/reservation', async (req, res) => {
-  const { showId, seats } = req.body;
+  const { showId, seats, userId } = req.body;
 
   try {
     const show = await Show.findByPk(showId);
     if (!show) return res.status(404).json({ error: 'Show not found' });
 
-    const user = await User.findOne();
-    if (!user) return res.status(401).json({ error: 'Unauthenticated user' });
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(401).json({ error: 'User not found or unauthenticated user' });
+
+    const existingReservation = await Reservation.findOne({
+      where: {
+        ShowId: showId,
+        UserId: user.id
+      }
+    });
+
+    if (existingReservation) {
+      return res.status(400).json({ error: 'User already has a reservation for this show' });
+    }
 
     const reservations = seats.map(seat => ({
       seat,
@@ -96,6 +107,7 @@ app.post('/reservation', async (req, res) => {
 
     res.status(200).json({ message: 'Reservation made successfully!' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'An error occurred during the reservations' });
   }
 });
