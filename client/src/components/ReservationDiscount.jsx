@@ -35,9 +35,9 @@ const ReservationDiscount = ({ userReservations, loyal }) => {
     <div>
       <h2>Discount Valure</h2>
       {discount !== null ? (
-        <p>Lo sconto applicato è: {discount}%</p>
+        <p>The discount applied is: {discount}%</p>
       ) : (
-        <p>Calcolo dello sconto in corso...</p>
+        <p>Calculating discount</p>
       )}
     </div>
   );
