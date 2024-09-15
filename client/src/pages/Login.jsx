@@ -23,7 +23,8 @@ const Login = ({ setUserId }) => {
 
       const data = await response.json();
       localStorage.setItem('userId', data.userId);
-      setUserId(data.userId);
+      if (setUserId) setUserId(data.userId);
+      else window.location = '/';
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
