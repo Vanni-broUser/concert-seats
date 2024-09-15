@@ -3,11 +3,12 @@ import { useParams } from 'react-router-dom';
 import ReservationInfo from '../components/ReservationInfo';
 import SeatGrid from '../components/SeatGrid';
 import ReservationDiscount from '../components/ReservationDiscount';
+import Login from './Login';
 import '../styles/Reservation.css';
 
 const Reservation = () => {
   const { showId } = useParams();
-  const userId = 4;
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [reservationId, setReservationId] = useState(null);
   const [theater, setTheater] = useState(null);
   const [show, setShow] = useState(null);
@@ -22,6 +23,7 @@ const Reservation = () => {
   const [userReservations, setUserReservations] = useState([]);
 
   useEffect(() => {
+    if (!userId) return;
     const fetchTheaterInfo = async () => {
       setLoading(true);
       try {
@@ -42,7 +44,7 @@ const Reservation = () => {
         const reservations = await reservationResponse.json();
         setOccupiedSeats(reservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
 
-        const filteredReservations = reservations.filter(res => res.UserId === userId);
+        const filteredReservations = reservations.filter(res => res.UserId === parseInt(userId));
         setUserReservations(filteredReservations);
         setReservationId(filteredReservations[0] ? filteredReservations[0].id : null);
         setUserReservedSeats(filteredReservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
@@ -171,6 +173,10 @@ const Reservation = () => {
   const occupiedSeatsCount = occupiedSeats.length;
   const selectedSeatsCount = selectedSeats.length;
   const availableSeatsCount = totalSeats - occupiedSeatsCount;
+
+  if (!userId) {
+    return <Login setUserId={setUserId} />;
+  }
 
   if (loading) return <div className="text-center">Loading...</div>;
   if (error) return <div className="alert alert-danger">{error}</div>;

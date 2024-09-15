@@ -24,15 +24,15 @@ export async function initializeDatabase() {
       ]);
 
       const users = await User.bulkCreate([
-        { username: 'john_doe', password: 'password123' },
-        { username: 'jane_doe', password: 'password456' },
-        { username: 'alice_wonder', password: 'password789' },
-        { username: 'bob_builder', password: 'password000' }
+        { username: 'john_doe', password: '$2a$10$Qtdw1tToJAW1Z4Lt9bRV0.m4HLIWuGsNgrvNkDyPpFyHSFmKykzNO', loyal: true }, //password123
+        { username: 'jane_doe', password: '$2a$10$Qtdw1tToJAW1Z4Lt9bRV0.m4HLIWuGsNgrvNkDyPpFyHSFmKykzNO', loyal: true },
+        { username: 'alice_wonder', password: '$2a$10$Qtdw1tToJAW1Z4Lt9bRV0.m4HLIWuGsNgrvNkDyPpFyHSFmKykzNO', loyal: true },
+        { username: 'bob_builder', password: '$2a$10$Qtdw1tToJAW1Z4Lt9bRV0.m4HLIWuGsNgrvNkDyPpFyHSFmKykzNO', loyal: false }
       ]);
 
       const reservations = await Reservation.bulkCreate([
-        { ShowId: shows[0].id, UserId: users[0].id },
-        { ShowId: shows[2].id, UserId: users[1].id }
+        { ShowId: shows[0].id, UserId: users[0].id, discount: 10 },
+        { ShowId: shows[2].id, UserId: users[1].id, discount: 15 }
       ]);
 
       await Seat.bulkCreate([

@@ -49,6 +49,8 @@ app.listen(PORT, () => {
   console.log(`Server running on the port ${PORT}`);
 });
 
+//console.log(await User.findAll())
+
 app.get('/', (req, res) => {
   res.send('Server is ready');
 });
@@ -190,10 +192,18 @@ app.get('/theater/:theaterId/shows', async (req, res) => {
   }
 });
 
-app.post('/login', passport.authenticate('local', {
-  successRedirect: 'http://localhost:3000/dashboard',
-  failureRedirect: 'http://localhost:3000/login'
-}));
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) return next(err);
+    if (!user) return res.status(401).json({ message: 'Login failed' });
+
+    req.login(user, (err) => {
+      if (err) return next(err);
+
+      return res.json({ userId: user.id });
+    });
+  })(req, res, next);
+});
 
 app.post('/logout', (req, res) => {
   req.logout((err) => {

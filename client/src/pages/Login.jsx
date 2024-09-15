@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Login = () => {
+const Login = ({ setUserId }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -21,6 +21,9 @@ const Login = () => {
         throw new Error('Login failed');
       }
 
+      const data = await response.json();
+      localStorage.setItem('userId', data.userId);
+      setUserId(data.userId);
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
