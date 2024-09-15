@@ -8,12 +8,12 @@ Route /login: Login form, allow users to login. After a successful login, the us
 Route /sign-up: Sign up form. Allow users to login successfully and to reserve seats.
 
 ## API Server 
-GET /reservation 
-DELETE /reservation/id
-POST /reservation
-GET /theater
-GET /shows/showId
-GET /theater/theaterId/shows
+GET /reservation: Uses the query parameter showId, returns all reservations and their related seats for the requested show.
+DELETE /reservation/id: Deletes a reservation and all its seats.
+POST /reservation: Requires a JSON request with the following keys: showId, seats, userId. Creates a reservation.
+GET /theater: Returns all theaters.
+GET /shows/showId: Returns all the information about a particular show, including details about the related theater.
+GET /theater/theaterId/shows: Returns all the shows for a particular theater.
 
 Auth
 POST /login: Authenticate and login the user.
@@ -36,10 +36,10 @@ Table Seats - seatNumber
 Store the seat numeber.
 
 ## Main React Components
-Home (in App.jsx)
-Reservation (in App.jsx)
-Seatgrid (Reservation.jsx)
-ReservationInfo (Reservation.jsx)
+Home (in App.jsx): Page to select the theater and show of interest.
+Reservation (in App.jsx): Page where users can view available seats for a show and make reservations.
+SeatGrid (in Reservation.jsx): Grid displaying the seats of a theater for a particular show.
+ReservationInfo (in Reservation.jsx): Section where users can view details of a show and their reservation.
 
 ## Screenshot
 
