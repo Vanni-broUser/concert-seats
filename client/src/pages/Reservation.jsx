@@ -7,7 +7,7 @@ import ReservationDiscount from '../components/ReservationDiscount';
 import Login from './Login';
 import '../styles/Reservation.css';
 
-const socket = io('http://localhost:8000'); // Connessione a Socket.IO
+const socket = io('http://localhost:8000');
 
 const Reservation = () => {
   const { showId } = useParams();
@@ -64,7 +64,6 @@ const Reservation = () => {
     fetchTheaterInfo();
 
     socket.on('updateSeats', ({ showId: updatedShowId, seats }) => {
-      console.log('ciaoo')
       if (updatedShowId === showId) {
         setOccupiedSeats(prevOccupiedSeats => [...new Set([...prevOccupiedSeats, ...seats])]);
       }
@@ -194,7 +193,6 @@ const Reservation = () => {
   }
 
   if (loading) return <div className="text-center">Loading...</div>;
-  if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
     <div className="container mt-5">
@@ -241,6 +239,7 @@ const Reservation = () => {
           </div>
         </>
       )}
+      {error && <div className="alert alert-danger mt-5">{error}</div>}
     </div>
   );
 };
