@@ -8,7 +8,7 @@ Route /login: Login form, allow users to login. After a successful login, the us
 Route /sign-up: Sign up form. Allow users to login successfully and to reserve seats.
 
 ## API Server 
-GET /reservation
+GET /reservation 
 DELETE /reservation/id
 POST /reservation
 GET /theater
@@ -24,11 +24,16 @@ POST /register: Register the user in the system to be able to make the reservati
 POST /calculate-discount
 
 ## Database Tables 
-Table Reservation – discount, belongsToShow, belongsToTheater, hasManySeat
+Table Reservation – discount.
+Store the discount, belongs to a show, to a theater and store the seats referred to the reservations. 
 Table Show – title, time
-Table Theater – name, location
+Store title and time of the shows. 
+Table Theater – name, location, numColumn, numRow
+Store the name, the location, the number of column and row of the theaters.
 Table User – username, password, loyal
+Store username, password of the users and if the user is loyal or not.
 Table Seats - seatNumber
+Store the seat numeber.
 
 ## Main React Components
 Home (in App.jsx)
@@ -39,8 +44,8 @@ ReservationInfo (Reservation.jsx)
 ## Screenshot
 
 ##User Credentials 
-{ username: 'john_doe', password: 'password123' },
-{ username: 'jane_doe', password: 'password123' },
-{ username: 'alice_wonder', password: 'password123' },
-{ username: 'bob_builder', password: 'password123' }
+{ username: 'john_doe', password: 'password123', loyal },
+{ username: 'jane_doe', password: 'password123', loyal },
+{ username: 'alice_wonder', password: 'password123', loyal },
+{ username: 'bob_builder', password: 'password123', not loyal }
 
