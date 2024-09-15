@@ -26,13 +26,13 @@ Auth
 ## Database Tables 
 - Table `Reservation` – discount.
 Store the discount, belongs to a show, to a theater and store the seats referred to the reservations. 
-- Table `Show` – title, time
+- Table `Show` – title, time.
 Store title and time of the shows. 
-- Table `Theater` – name, location, numColumn, numRow
+- Table `Theater` – name, location, numColumn, numRow.
 Store the name, the location, the number of column and row of the theaters.
-- Table `User` – username, password, loyal
+- Table `User` – username, password, loyal.
 Store username, password of the users and if the user is loyal or not.
-- Table `Seats` - seatNumber
+- Table `Seats` - seatNumber. 
 Store the seat numeber.
 
 ## Main React Components
