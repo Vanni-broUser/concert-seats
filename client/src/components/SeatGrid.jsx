@@ -1,7 +1,7 @@
 import SeatRow from './SeatRow';
 import Seat from './Seat';
 
-const SeatGrid = ({ theater, selectedSeats, occupiedSeats, userReservedSeats, handleSeatClick }) => {
+const SeatGrid = ({ theater, selectedSeats, occupiedSeats, userReservedSeats, handleSeatClick, recentlyBookedSeats }) => {
   const getColumnLetter = (columnNumber) => String.fromCharCode(64 + columnNumber);
 
   const renderSeats = () => {
@@ -13,7 +13,11 @@ const SeatGrid = ({ theater, selectedSeats, occupiedSeats, userReservedSeats, ha
         const isSelected = selectedSeats.includes(seatId);
         const isOccupied = occupiedSeats.includes(seatId);
         const isUserReserved = userReservedSeats.includes(seatId);
-        const seatClass = isUserReserved
+        const isRecentlyBooked = recentlyBookedSeats.includes(seatId);
+
+        const seatClass = isRecentlyBooked
+          ? 'recently-booked'
+          : isUserReserved
           ? 'occupied'
           : isOccupied
           ? 'occupied'

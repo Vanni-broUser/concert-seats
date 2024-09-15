@@ -34,3 +34,17 @@
   background-color: yellow;
   color: black;
 }
+
+.seat.recently-booked {
+  background-color: blue;
+  animation: flashBlue 5s linear;
+}
+
+@keyframes flashBlue {
+  0% {
+    background-color: blue;
+  }
+  100% {
+    background-color: #d3d3d3;
+  }
+}

@@ -24,6 +24,7 @@ const Reservation = () => {
   const [inputError, setInputError] = useState('');
   const [showSecondComponent, setShowSecondComponent] = useState(false);
   const [userReservations, setUserReservations] = useState([]);
+  const [recentlyBookedSeats, setRecentlyBookedSeats] = useState([]);
 
   useEffect(() => {
     if (!userId) return;
@@ -66,6 +67,12 @@ const Reservation = () => {
     socket.on('updateSeats', ({ showId: updatedShowId, seats }) => {
       if (updatedShowId === showId) {
         setOccupiedSeats(prevOccupiedSeats => [...new Set([...prevOccupiedSeats, ...seats])]);
+
+        setRecentlyBookedSeats(seats);
+
+        setTimeout(() => {
+          setRecentlyBookedSeats([]);
+        }, 5000);
       }
     });
 
@@ -213,6 +220,7 @@ const Reservation = () => {
             occupiedSeats={occupiedSeats}
             userReservedSeats={userReservedSeats}
             handleSeatClick={handleSeatClick}
+            recentlyBookedSeats={recentlyBookedSeats}  // Passa i posti recentemente prenotati
           />
           <div className="mt-4">
             <button className="btn btn-success" onClick={handleConfirmReservation}>
