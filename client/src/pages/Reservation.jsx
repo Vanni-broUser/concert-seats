@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ReservationInfo from '../components/ReservationInfo';
 import SeatGrid from '../components/SeatGrid';
+import ReservationDiscount from '../components/ReservationDiscount';
 import '../styles/Reservation.css';
 
 const Reservation = () => {
@@ -17,6 +18,8 @@ const Reservation = () => {
   const [error, setError] = useState(null);
   const [numberOfSeats, setNumberOfSeats] = useState('');
   const [inputError, setInputError] = useState('');
+  const [showSecondComponent, setShowSecondComponent] = useState(false);
+  const [userReservations, setUserReservations] = useState([]);
 
   useEffect(() => {
     const fetchTheaterInfo = async () => {
@@ -39,9 +42,12 @@ const Reservation = () => {
         const reservations = await reservationResponse.json();
         setOccupiedSeats(reservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
 
-        const userReservations = reservations.filter(res => res.UserId === userId);
-        setReservationId(userReservations[0] ? userReservations[0].id : null);
-        setUserReservedSeats(userReservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
+        const filteredReservations = reservations.filter(res => res.UserId === userId);
+        setUserReservations(filteredReservations);
+        setReservationId(filteredReservations[0] ? filteredReservations[0].id : null);
+        setUserReservedSeats(filteredReservations.map(res => res.Seats.map(seat => seat.seatNumber)).flat());
+
+        if (filteredReservations.length > 0) setShowSecondComponent(true);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -209,6 +215,7 @@ const Reservation = () => {
                 Auto Book
               </button>
             </div>
+            {showSecondComponent && <ReservationDiscount userReservations={userReservations} loyal={true} />}
             {inputError && <div className="alert alert-danger mt-2">{inputError}</div>}
           </div>
         </>

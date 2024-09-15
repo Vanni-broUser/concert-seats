@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ReservationInfo = ({ show, availableSeatsCount, occupiedSeatsCount, selectedSeatsCount, totalSeats, userReservedSeats, onDeleteReservation }) => (
   <div className="mt-3 mb-4">
     <h1>{show ? show.title : 'Show Details'}</h1>

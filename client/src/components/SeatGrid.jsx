@@ -1,4 +1,3 @@
-import React from 'react';
 import SeatRow from './SeatRow';
 import Seat from './Seat';
 
