@@ -21,10 +21,10 @@ const ReservationDiscount = ({ userReservations, loyal }) => {
           const data = await response.json();
           setDiscount(data.discount);
         } else {
-          console.error('Errore nella richiesta');
+          console.error('Request error');
         }
       } catch (error) {
-        console.error('Errore nella richiesta', error);
+        console.error('Request error', error);
       }
     };
 
@@ -33,7 +33,7 @@ const ReservationDiscount = ({ userReservations, loyal }) => {
 
   return (
     <div>
-      <h2>Valore dello sconto</h2>
+      <h2>Discount Valure</h2>
       {discount !== null ? (
         <p>Lo sconto applicato è: {discount}%</p>
       ) : (
