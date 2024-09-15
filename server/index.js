@@ -1,6 +1,8 @@
 import cors from 'cors';
+import http from 'http';
 import express from 'express';
 import session from 'express-session';
+import { Server as SocketIOServer } from 'socket.io';
 import SequelizeStoreInit from 'connect-session-sequelize';
 
 import passport from './passport.js';
@@ -16,6 +18,14 @@ import Reservation from './models/Reservation.js';
 
 const PORT = 8000;
 const app = express();
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
@@ -45,14 +55,26 @@ sequelize.sync()
   })
   .catch(err => console.error('Unable to create table:', err));
 
-app.listen(PORT, () => {
-  console.log(`Server running on the port ${PORT}`);
-});
-
-//console.log(await User.findAll())
-
 app.get('/', (req, res) => {
   res.send('Server is ready');
+});
+
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('seatReserved', (data) => {
+    console.log('Seats reserved:', data);
+
+    socket.broadcast.emit('updateSeats', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+server.listen(PORT, () => {
+  console.log('listening on *:' + PORT);
 });
 
 app.get('/reservation', async (req, res) => {
@@ -132,6 +154,8 @@ app.post('/reservation', async (req, res) => {
     }));
 
     await Seat.bulkCreate(seatEntries);
+
+    io.emit('updateSeats', { showId, seats });
 
     res.status(200).json({ message: 'Reservation made successfully!' });
   } catch (error) {

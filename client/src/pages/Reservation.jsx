@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import ReservationInfo from '../components/ReservationInfo';
 import SeatGrid from '../components/SeatGrid';
 import ReservationDiscount from '../components/ReservationDiscount';
 import Login from './Login';
 import '../styles/Reservation.css';
+
+const socket = io('http://localhost:8000'); // Connessione a Socket.IO
 
 const Reservation = () => {
   const { showId } = useParams();
@@ -24,6 +27,7 @@ const Reservation = () => {
 
   useEffect(() => {
     if (!userId) return;
+
     const fetchTheaterInfo = async () => {
       setLoading(true);
       try {
@@ -58,6 +62,17 @@ const Reservation = () => {
     };
 
     fetchTheaterInfo();
+
+    socket.on('updateSeats', ({ showId: updatedShowId, seats }) => {
+      console.log('ciaoo')
+      if (updatedShowId === showId) {
+        setOccupiedSeats(prevOccupiedSeats => [...new Set([...prevOccupiedSeats, ...seats])]);
+      }
+    });
+
+    return () => {
+      socket.off('updateSeats');
+    };
   }, [showId, userId]);
 
   const handleSeatClick = (row, column) => {
